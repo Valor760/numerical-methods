@@ -2,38 +2,29 @@ from math import sqrt
 import time
 
 
+# This function works only if Y is one-dimensional array
+# Since it is used only for multiplying A with X0 - its okay
 def matrices_multiply(X: list, Y: list) -> list:
-	height = len(X)
-	width = len(Y) if len(Y) / height > 1 else 1
 	result = []
-
-
-	# Prepare new matrix
-	if width > 1:
-		for _ in range(width):
-			result.append([])
-	
-	for i in range(height):
+	for i in range(len(X)):
 		sum = 0
-		for j in range(width):
-			if width > 1:
-				sum += X[i][j] * Y[j][i]
-				result[i].append(sum)
-			else:
-				sum += X[i][j] * Y[j]
-				result.append(sum)
-	
-	return result
+		for j in range(len(Y)):
+			sum += X[i][j] * Y[j]
+		result.append(sum)
 
+	return result
 
 
 def solve_iterative(A: list, B: list, X0: list, n: int, accurracy: float) -> None:
 	# Apply X coefficients on B vector and null the ones in A matrix
-	for i in range(n):
-		B[i] = B[i] / A[i][i]
+	for i in range(n): 
+		div_val = A[i][i]
+		B[i] = B[i] / div_val
+		for j in range(n): A[i][j] /= -div_val # Divide all values in the row and reverse their sign
 		A[i][i] = 0
 
 	k = 0
+	last_delta = 0
 	while True:
 		k += 1
 		alfa_x0 = matrices_multiply(A, X0)
@@ -41,11 +32,10 @@ def solve_iterative(A: list, B: list, X0: list, n: int, accurracy: float) -> Non
 		delta = max([abs(x1[i] - X0[i]) for i in range(n)])
 		X0 = x1
 
-		print(f"K = {k}   Delta = {delta} X1 = {x1}\n")
+		print(f"K = {k}\tDelta = {round(delta, 6)}\tX1 = {[round(x, 5) for x in x1]}\n")
 
-		if delta <= accurracy: break
-
-
+		if delta <= accurracy or (k >= 10 and last_delta < delta): break
+		last_delta = delta
 
 
 def convert_to_matrix(A: list, n: int) -> list:
@@ -98,10 +88,7 @@ def main() -> None:
 	# Solve equation
 	start = time.time()
 	solve_iterative(matA, vecB, vecX0, n, accurracy)
-	# solve_gauss_elim(matA, vecB, n)
 	duration = time.time() - start
-
-	# print(f"\nAnswer is: {[round(x, 4) for x in vecB]}")
 	print(f"Time: {round(duration * 1000, 2)}ms")	
 
 
