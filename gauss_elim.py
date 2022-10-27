@@ -54,31 +54,32 @@ def split_and_convert_to_float(data: str) -> list:
 
 
 def main() -> None:
-	vecA = input("Input A vector(space separated):\n")
-	vecA = split_and_convert_to_float(vecA)
+	vecA = split_and_convert_to_float(input("Input A vector(space separated):\n"))
 	
+	# Check vector A is NxN size
 	n = sqrt(len(vecA))
 	if n != round(n):
 		print("Matrix is not NxN size!")
 		print(f"Your matrix: [{vecA}]")
 		return
-	n = int(n)
+	n = int(n) # sqrt returns float...
 	matA = convert_to_matrix(vecA, n)
 
-	vecB = input("Input B vector:\n")
-	vecB = split_and_convert_to_float(vecB)
+	vecB = split_and_convert_to_float(input("Input B vector(space separated):\n"))
 	if len(vecB) != n:
 		print("Vector B length is not equal to A matrix length!")
 		print(f"Vector B length: {len(vecB)}   Matrix A length: {n}")
 		return
 
+	# Solve equation
 	start = time.time()
 	solve_gauss_elim(matA, vecB, n)
 	duration = time.time() - start
 
-	print(f"Answer is: {[round(x, 4) for x in vecB]}")
+	print(f"\nAnswer is: {[round(x, 4) for x in vecB]}")
 	print(f"Time: {round(duration * 1000, 2)}ms")	
 
 
 if __name__ == '__main__':
 	main()
+	input("Press any key to continue...")
