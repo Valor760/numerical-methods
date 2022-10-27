@@ -1,21 +1,21 @@
 from math import sqrt
+import time
 
 
 def solve_gauss_elim(A: list, B: list, n: int) -> list:
-	curr_col_idx = 0
 	lead_row_idx = 0
 
 	for i in range(n): # i - column
 		# Find leading row index
 		nums = []
-		for j in range(0, n): # j - row
+		for j in range(i, n): # j - row
 			nums.append(abs(A[j][i])) # Add absolute value of each row in column
-		lead_row_idx = nums.index(max(nums))
+		lead_row_idx = nums.index(max(nums)) + i
 
-		# Place leading row on the first place (don't forget to swap in B vec)
-		A[0], A[lead_row_idx] = A[lead_row_idx], A[0] 
-		B[0], B[lead_row_idx] = B[lead_row_idx], B[0]
-		lead_row_idx = 0
+		# Place leading row on the ith place (don't forget to swap in B vec)
+		A[i], A[lead_row_idx] = A[lead_row_idx], A[i] 
+		B[i], B[lead_row_idx] = B[lead_row_idx], B[i]
+		lead_row_idx = i
 
 		# Divide leading row by leading value
 		div_val = A[lead_row_idx][i]
@@ -26,9 +26,10 @@ def solve_gauss_elim(A: list, B: list, n: int) -> list:
 		# Eliminate rows
 		for j in range(n): # j - row
 			if j != lead_row_idx:
+				x = A[j][i]
 				for k in range(n): # k - column
-					A[j][k] = A[j][k] - A[lead_row_idx][k] * A[j][i]
-				B[j] = B[j] - B[lead_row_idx] * A[j][i]
+					A[j][k] = A[j][k] - A[lead_row_idx][k] * x
+				B[j] = B[j] - B[lead_row_idx] * x
 
 
 def convert_to_matrix(A: list, n: int) -> list:
@@ -53,7 +54,7 @@ def split_and_convert_to_float(data: str) -> list:
 
 
 def main() -> None:
-	vecA = input("Input A vector(space separated separated):\n")
+	vecA = input("Input A vector(space separated):\n")
 	vecA = split_and_convert_to_float(vecA)
 	
 	n = sqrt(len(vecA))
@@ -71,9 +72,12 @@ def main() -> None:
 		print(f"Vector B length: {len(vecB)}   Matrix A length: {n}")
 		return
 
+	start = time.time()
 	solve_gauss_elim(matA, vecB, n)
-	print(f"Mat A:\n{matA}")
-	print(f"Vec B: {vecB}")	
+	duration = time.time() - start
+
+	print(f"Answer is: {[round(x, 4) for x in vecB]}")
+	print(f"Time: {round(duration * 1000, 2)}ms")	
 
 
 if __name__ == '__main__':
