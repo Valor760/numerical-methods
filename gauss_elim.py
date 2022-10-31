@@ -1,3 +1,4 @@
+from cgi import print_arguments
 from math import sqrt
 import time
 
@@ -53,6 +54,29 @@ def split_and_convert_to_float(data: str) -> list:
 	return converted_data
 
 
+def find_condA(A: list, B: list, X: list) -> float:
+	Xm = B.copy()
+	# Increase by 1%
+	biggest_val = max(B)
+	# B[B.index(biggest_val)] += biggest_val * 0.01
+	for i in range(len(Xm)):
+		Xm[i] += 0.01
+
+	deltaB = [0.01] * len(B)
+	# for i in range(len(B)):
+	# 	deltaB.append(B[i] - B_copy[i])
+
+	solve_gauss_elim(A, Xm, len(B))
+
+	deltaX = []
+	for i in range(len(X)):
+		deltaX.append(Xm[i] - X[i])
+
+	cond_A = (sum([abs(dX) for dX in deltaX]) / sum([abs(x) for x in X])) / (sum([abs(dB) for dB in deltaB]) / sum([abs(b) for b in B])) 
+	return cond_A
+
+
+
 def main() -> None:
 	vecA = split_and_convert_to_float(input("Input A vector(space separated):\n"))
 	
@@ -71,13 +95,20 @@ def main() -> None:
 		print(f"Vector B length: {len(vecB)}   Matrix A length: {n}")
 		return
 
+	vecB_copy = vecB.copy()
+	matA_copy = convert_to_matrix(vecA.copy(), n)
+
 	# Solve equation
 	start = time.time()
 	solve_gauss_elim(matA, vecB, n)
 	duration = time.time() - start
 
 	print(f"\nAnswer is: {[round(x, 4) for x in vecB]}")
-	print(f"Time: {round(duration * 1000, 2)}ms")	
+	print(f"Time: {round(duration * 1000, 2)}ms")
+
+	# Find cond(A)
+	cond_A = find_condA(matA_copy, vecB_copy, vecB)
+	print(f"Cond(A) = {round(cond_A, 4)}")
 
 
 if __name__ == '__main__':
