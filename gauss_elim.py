@@ -55,22 +55,20 @@ def split_and_convert_to_float(data: str) -> list:
 
 
 def find_condA(A: list, B: list, X: list) -> float:
-	Xm = B.copy()
+	Bm = B.copy()
 	# Increase by 1%
-	biggest_val = max(B)
-	# B[B.index(biggest_val)] += biggest_val * 0.01
-	for i in range(len(Xm)):
-		Xm[i] += 0.01
+	biggest_val = max(Bm)
+	Bm[Bm.index(biggest_val)] += biggest_val * 0.01
 
-	deltaB = [0.01] * len(B)
-	# for i in range(len(B)):
-	# 	deltaB.append(B[i] - B_copy[i])
+	deltaB = []
+	for i in range(len(B)):
+		deltaB.append(B[i] - Bm[i])
 
-	solve_gauss_elim(A, Xm, len(B))
+	solve_gauss_elim(A, Bm, len(B))
 
 	deltaX = []
 	for i in range(len(X)):
-		deltaX.append(Xm[i] - X[i])
+		deltaX.append(Bm[i] - X[i])
 
 	cond_A = (sum([abs(dX) for dX in deltaX]) / sum([abs(x) for x in X])) / (sum([abs(dB) for dB in deltaB]) / sum([abs(b) for b in B])) 
 	return cond_A
