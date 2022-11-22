@@ -2,15 +2,35 @@ from math import sqrt
 import time
 import matplotlib.pyplot as plt
 
+
+def generate_plot_data(min: float, max: float, coeffs: list) -> list:
+	h = 0.01
+	points = []
+	interval_values = []
+
+	while min <= max:
+		interval_values.append(min)
+		min += h
+
+	for x in interval_values:
+		value = 0
+		for i in range(len(coeffs)):
+			value += coeffs[i] * (x ** i)
+		points.append(value)
+
+	return points
+
+
 def solve_lsq(X: list, Y:list, n: int, k: int) -> list:
 	# Fill matrix A
 	matA = [[1] * k]
-	matA[0][0] = n
+	matA[0][0] = n+1
 	# for power in range(1, k):
 	# 	buff = []
 	# 	for num in X:
 	# 		buff.append(num ** power)
 	# 	matA[0].append(sum(buff))
+
 	for power in range(1, k):
 		buff = []
 		for num in X:
@@ -60,19 +80,6 @@ def solve_gauss_elim(A: list, B: list, n: int) -> list:
 				B[j] = B[j] - B[lead_row_idx] * x
 
 
-def convert_to_matrix(A: list, n: int) -> list:
-	new_arr = []
-	sub_arr = []
-	for i in range(0, n*n):
-		sub_arr.append(A[i])
-
-		if (i+1) % n == 0:
-			new_arr.append(sub_arr)
-			sub_arr = []
-	
-	return new_arr
-
-
 def split_and_convert_to_float(data: str) -> list:
 	split_data = data.split(' ')
 	converted_data = []
@@ -104,12 +111,13 @@ def main() -> None:
 	result = solve_lsq(vecX, vecY, size_n, k)
 	duration = time.time() - start
 
-	plt.plot(result)
-	plt.show()
 
 	print(f"\nAnswer is: {[round(x, 4) for x in result]}")
 	print(f"Time: {round(duration * 1000, 2)}ms")	
 
+	points = generate_plot_data(min(vecX), max(vecX), result)
+	plt.plot(points)
+	plt.show()
 
 if __name__ == '__main__':
 	main()
