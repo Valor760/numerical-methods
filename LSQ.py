@@ -3,14 +3,18 @@ import time
 import matplotlib.pyplot as plt
 
 
-def generate_plot_data(min: float, max: float, coeffs: list) -> list:
-	h = 0.01
-	points = []
+def get_points_x(left:float, right: float, h: float = 0.01) -> list:
 	interval_values = []
+	n_left = left
+	while n_left <= right:
+		interval_values.append(n_left)
+		n_left += h
+	return interval_values
 
-	while min <= max:
-		interval_values.append(min)
-		min += h
+
+def generate_plot_data(min: float, max: float, coeffs: list) -> list:
+	points = []
+	interval_values = get_points_x(min, max)
 
 	for x in interval_values:
 		value = 0
@@ -23,20 +27,16 @@ def generate_plot_data(min: float, max: float, coeffs: list) -> list:
 
 def solve_lsq(X: list, Y:list, n: int, k: int) -> list:
 	# Fill matrix A
-	matA = [[1] * k]
-	matA[0][0] = n+1
-	# for power in range(1, k):
-	# 	buff = []
-	# 	for num in X:
-	# 		buff.append(num ** power)
-	# 	matA[0].append(sum(buff))
-
-	for power in range(1, k):
-		buff = []
-		for num in X:
-			buff.append(num ** power)
+	matA = []
+	for i in range(k):
 		matA.append([1] * k)
-		matA[power][power] = sum(buff)
+
+	for i in range(k):
+		for j in range(k):
+			buff = []
+			for idx in range(n):
+				buff.append(X[idx] ** (i + j))
+			matA[i][j] = sum(buff)
 	
 	# Fill matrix B
 	matB = [sum(Y)]
@@ -46,7 +46,7 @@ def solve_lsq(X: list, Y:list, n: int, k: int) -> list:
 			buff.append((X[idx] ** power) * Y[idx])
 		matB.append(sum(buff))
 
-	solve_gauss_elim(matA, matB, n)
+	solve_gauss_elim(matA, matB, k)
 	return matB
 
 
@@ -58,7 +58,7 @@ def solve_gauss_elim(A: list, B: list, n: int) -> list:
 		nums = []
 		for j in range(i, n): # j - row
 			nums.append(abs(A[j][i])) # Add absolute value of each row in column
-		lead_row_idx = nums.index(max(nums))
+		lead_row_idx = nums.index(max(nums)) + i
 
 		# Place leading row on the ith place (don't forget to swap in B vec)
 		A[i], A[lead_row_idx] = A[lead_row_idx], A[i] 
@@ -105,6 +105,7 @@ def main() -> None:
 	if k < 0:
 		print(f"ERROR: Order K couldn't be less than 0! Your value = {k}")
 		return
+	else: k+=1
 
 	# Solve equation
 	start = time.time()
@@ -116,7 +117,8 @@ def main() -> None:
 	print(f"Time: {round(duration * 1000, 2)}ms")	
 
 	points = generate_plot_data(min(vecX), max(vecX), result)
-	plt.plot(points)
+	plt.plot(vecX, vecY, 'bo')
+	plt.plot(get_points_x(min(vecX), max(vecX)), points)
 	plt.show()
 
 if __name__ == '__main__':

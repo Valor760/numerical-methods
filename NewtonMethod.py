@@ -52,7 +52,7 @@ def showPlot():
     # evaluate on new data points
     x_new = np.arange(min(x), max(x), .01)
     y_new = newton_poly(a_s, x, x_new)
-    plt.plot(x, y, 'bo')
+    plt.plot(x, y, 'ro')
     plt.plot(x_new, y_new, 'b')
 
 
