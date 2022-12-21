@@ -12,7 +12,6 @@ def solve_bisection(a: float, b: float, E: float) -> None:
 		x = (a + b) / 2
 		fx = func(x)
 		fa = func(a)
-		fb = func(b)
 		if (fa * fx) <= 0:
 			b = x
 		else:
