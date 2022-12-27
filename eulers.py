@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 
 def func_analytic(a: float, b: float, x0: float, t: float) -> float:
 	return (a * x0 * exp(a * t)) / (a + (b * x0 * (exp(a * t) - 1)))
-	# return (2.66667 * exp(0.8 * t)) / (1.66667 + exp(0.8 * t))
 
 
 def func(a: float, b: float, x: float) -> float:
@@ -44,8 +43,10 @@ def main() -> None:
 	plt.plot(t, arr_analytic, 'b', linestyle='dotted')
 	plt.show()
 
+	print(f"Maximum error: {max(arr_error)}")
 	plt.plot(t, arr_error)
 	plt.show()
+
 
 if __name__ == "__main__":
 	main()
